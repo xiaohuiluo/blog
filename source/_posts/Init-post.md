@@ -7,3 +7,13 @@ tags:
 ### Init post for blog
 
 Hello World
+
+<!--more-->
+```bash
+
+cd /root
+
+ls
+
+ls -a
+```
