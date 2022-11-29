@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xiaohuiluo.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近做一些多路径相关研究，主要有mptcp和mpquic两种方式，多路径最终在于解决3个问题：多条路径如何建立、多条路径如何分配数据包以及多条路径如何做好拥塞控制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mptcp linux kernel implementation">
+<meta property="og:url" content="https://xiaohuiluo.github.io/2022/11/28/mptcp%20linux%20kernel%20implementation/index.html">
+<meta property="og:site_name" content="HUI">
+<meta property="og:description" content="最近做一些多路径相关研究，主要有mptcp和mpquic两种方式，多路径最终在于解决3个问题：多条路径如何建立、多条路径如何分配数据包以及多条路径如何做好拥塞控制。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210817150015171.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210812102200625.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210811151032091.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210811150851262.png">
+<meta property="article:published_time" content="2022-11-28T03:19:15.000Z">
+<meta property="article:modified_time" content="2022-11-29T02:15:44.290Z">
+<meta property="article:author" content="HUI">
+<meta property="article:tag" content="multipath">
+<meta property="article:tag" content="mptcp">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210817150015171.png">
+
+<link rel="canonical" href="https://xiaohuiluo.github.io/2022/11/28/mptcp%20linux%20kernel%20implementation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Mptcp linux kernel implementation | HUI</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?cecc1da264cf1b9844644fd6f454fcdd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HUI</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xiaohuiluo.github.io/2022/11/28/mptcp%20linux%20kernel%20implementation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="HUI">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HUI">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mptcp linux kernel implementation
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-28 11:19:15" itemprop="dateCreated datePublished" datetime="2022-11-28T11:19:15+08:00">2022-11-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-29 10:15:44" itemprop="dateModified" datetime="2022-11-29T10:15:44+08:00">2022-11-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近做一些多路径相关研究，主要有mptcp和mpquic两种方式，多路径最终在于解决3个问题：<strong>多条路径如何建立</strong>、<strong>多条路径如何分配数据包</strong>以及<strong>多条路径如何做好拥塞控制</strong>。</p>
+<span id="more"></span>
+<p><img src="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210817150015171.png" alt="image-20210817150015171" /></p>
+<p>这里介绍一下mptcp，mptcp linux内核实现针对多路径问题分为如下三个核心部分，使用mptcp时根据不同使用场景对其进行不同的配置是很有必要的。</p>
+<blockquote>
+<ol>
+<li>path manager : 路径管理</li>
+<li>scheduler control : 调度控制算法</li>
+<li>congestion control : 拥塞控制算法</li>
+</ol>
+</blockquote>
+<h2 id="path-manager"><a class="markdownIt-Anchor" href="#path-manager"></a> path manager</h2>
+<h3 id="path-manager分析"><a class="markdownIt-Anchor" href="#path-manager分析"></a> path manager分析</h3>
+<p>Linux最新mptcp_v0.95实现中一共包含如下4种路径管理(subflow)机制,还有一种默认dummy(啥都不做)路径管理。</p>
+<blockquote>
+<ol>
+<li>Full-Mesh</li>
+<li>ndiff-ports</li>
+<li>Binder</li>
+<li>Netlink</li>
+<li>dummy(默认)</li>
+</ol>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">config MPTCP_FULLMESH</span><br><span class="line">	tristate <span class="string">&quot;MPTCP Full-Mesh Path-Manager&quot;</span></span><br><span class="line">	depends on MPTCP=y</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This path-management module will create a full-mesh among all IP-addresses.</span><br><span class="line"></span><br><span class="line">config MPTCP_NDIFFPORTS</span><br><span class="line">	tristate <span class="string">&quot;MPTCP ndiff-ports&quot;</span></span><br><span class="line">	depends on MPTCP=y</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This path-management module will create multiple subflows between the same</span><br><span class="line">	  pair of IP-addresses, modifying the source-port. You can <span class="built_in">set</span> the number</span><br><span class="line">	  of subflows via the mptcp_ndiffports-sysctl.</span><br><span class="line"></span><br><span class="line">config MPTCP_BINDER</span><br><span class="line">	tristate <span class="string">&quot;MPTCP Binder&quot;</span></span><br><span class="line">	depends on (MPTCP=y)</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This path-management module works like ndiffports, and adds the sysctl</span><br><span class="line">	  option to <span class="built_in">set</span> the gateway (and/or path to) per each additional subflow</span><br><span class="line">	  via Loose Source Routing (IPv4 only).</span><br><span class="line"></span><br><span class="line">config MPTCP_NETLINK</span><br><span class="line">	tristate <span class="string">&quot;MPTCP Netlink Path-Manager&quot;</span></span><br><span class="line">	depends on MPTCP=y</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This path-management module is controlled over a Netlink interface. A userspace</span><br><span class="line">	  module can therefore control the establishment of new subflows and the policy</span><br><span class="line">	  to apply over those new subflows <span class="keyword">for</span> every connection.</span><br></pre></td></tr></table></figure>
+<h3 id="path-manager配置"><a class="markdownIt-Anchor" href="#path-manager配置"></a> path manager配置</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210812102200625.png" alt="image-20210812102200625" /></p>
+<p><code>sysctl net.mptcp.mptcp_path_manager=default/fullmesh/ndiffports/binder/netlink</code></p>
+<h2 id="scheduler-control"><a class="markdownIt-Anchor" href="#scheduler-control"></a> scheduler control</h2>
+<h3 id="scheduler分析"><a class="markdownIt-Anchor" href="#scheduler分析"></a> scheduler分析</h3>
+<p>Linux最新mptcp_v0.95实现中一共包含如下4种多路径调度算法，默认使用minRTT调度算法。</p>
+<blockquote>
+<ol>
+<li>minRTT(默认)</li>
+<li>Round-Robin</li>
+<li>Redundant</li>
+<li>BLEST(实验阶段)</li>
+</ol>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">config DEFAULT_SCHEDULER</span><br><span class="line">	bool <span class="string">&quot;Default&quot;</span></span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This is the default scheduler, sending first on the subflow</span><br><span class="line">	  with the lowest RTT.</span><br><span class="line"></span><br><span class="line">config DEFAULT_ROUNDROBIN</span><br><span class="line">	bool <span class="string">&quot;Round-Robin&quot;</span> <span class="keyword">if</span> MPTCP_ROUNDROBIN=y</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This is the round-rob scheduler, sending <span class="keyword">in</span> a round-robin</span><br><span class="line">	  fashion..</span><br><span class="line"></span><br><span class="line">config DEFAULT_REDUNDANT</span><br><span class="line">	bool <span class="string">&quot;Redundant&quot;</span> <span class="keyword">if</span> MPTCP_REDUNDANT=y</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	  This is the redundant scheduler, sending packets redundantly over</span><br><span class="line">	  all the subflows.</span><br><span class="line">config MPTCP_BLEST</span><br><span class="line">	tristate <span class="string">&quot;MPTCP BLEST&quot;</span></span><br><span class="line">	depends on MPTCP=y</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">  	  This is an experimental BLocking ESTimation-based (BLEST) scheduler.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="scheduler配置"><a class="markdownIt-Anchor" href="#scheduler配置"></a> scheduler配置</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210811151032091.png" alt="image-20210811151032091" /></p>
+<p><code>sysctl net.mptcp.mptcp_scheduler=default/roundrobin/redundant/blest</code></p>
+<p><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/7497206"><code>BLEST</code> https://ieeexplore.ieee.org/document/7497206</a></p>
+<h2 id="congestion-control"><a class="markdownIt-Anchor" href="#congestion-control"></a> congestion control</h2>
+<h3 id="congestion-control分析"><a class="markdownIt-Anchor" href="#congestion-control分析"></a> congestion control分析</h3>
+<p>Linux最新mptcp_v0.95实现中一共包含如下5种mptcp拥塞算法，还有很多种tcp拥塞算法，默认使用cubic算法，安装github生成安装包及使用mptcp内核并不会默认使用mptcp相关拥塞算法，需要自己加载进内核并启用mptcp拥塞算法，有的新版本支持特性可能需要自己配置linux内核并重新编译。</p>
+<blockquote>
+<ol>
+<li>LIA</li>
+<li>OLIA</li>
+<li>WVEGAS</li>
+<li>BALIA</li>
+<li>MCTCPDESYNC</li>
+</ol>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">config TCP_CONG_LIA</span><br><span class="line">	tristate <span class="string">&quot;MPTCP Linked Increase&quot;</span></span><br><span class="line">	depends on MPTCP</span><br><span class="line">	default n</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	MultiPath TCP Linked Increase Congestion Control</span><br><span class="line">	To <span class="built_in">enable</span> it, just put <span class="string">&#x27;lia&#x27;</span> <span class="keyword">in</span> tcp_congestion_control</span><br><span class="line"></span><br><span class="line">config TCP_CONG_OLIA</span><br><span class="line">	tristate <span class="string">&quot;MPTCP Opportunistic Linked Increase&quot;</span></span><br><span class="line">	depends on MPTCP</span><br><span class="line">	default n</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	MultiPath TCP Opportunistic Linked Increase Congestion Control</span><br><span class="line">	To <span class="built_in">enable</span> it, just put <span class="string">&#x27;olia&#x27;</span> <span class="keyword">in</span> tcp_congestion_control</span><br><span class="line"></span><br><span class="line">config TCP_CONG_WVEGAS</span><br><span class="line">	tristate <span class="string">&quot;MPTCP WVEGAS CONGESTION CONTROL&quot;</span></span><br><span class="line">	depends on MPTCP</span><br><span class="line">	default n</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	wVegas congestion control <span class="keyword">for</span> MPTCP</span><br><span class="line">	To <span class="built_in">enable</span> it, just put <span class="string">&#x27;wvegas&#x27;</span> <span class="keyword">in</span> tcp_congestion_control</span><br><span class="line"></span><br><span class="line">config TCP_CONG_BALIA</span><br><span class="line">	tristate <span class="string">&quot;MPTCP BALIA CONGESTION CONTROL&quot;</span></span><br><span class="line">	depends on MPTCP</span><br><span class="line">	default n</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	Multipath TCP Balanced Linked Adaptation Congestion Control</span><br><span class="line">	To <span class="built_in">enable</span> it, just put <span class="string">&#x27;balia&#x27;</span> <span class="keyword">in</span> tcp_congestion_control</span><br><span class="line"></span><br><span class="line">config TCP_CONG_MCTCPDESYNC</span><br><span class="line">	tristate <span class="string">&quot;DESYNCHRONIZED MCTCP CONGESTION CONTROL (EXPERIMENTAL)&quot;</span></span><br><span class="line">	depends on MPTCP</span><br><span class="line">	default n</span><br><span class="line">	---<span class="built_in">help</span>---</span><br><span class="line">	Desynchronized MultiChannel TCP Congestion Control. This is experimental</span><br><span class="line">	code that only supports single path and must have <span class="built_in">set</span> mptcp_ndiffports</span><br><span class="line">	larger than one.</span><br><span class="line">	To <span class="built_in">enable</span> it, just put <span class="string">&#x27;mctcpdesync&#x27;</span> <span class="keyword">in</span> tcp_congestion_control</span><br><span class="line">	For further details see:</span><br><span class="line">	  http://ieeexplore.ieee.org/abstract/document/6911722/</span><br><span class="line">	  https://doi.org/10.1016/j.comcom.2015.07.010</span><br></pre></td></tr></table></figure>
+<h3 id="congestion-control配置"><a class="markdownIt-Anchor" href="#congestion-control配置"></a> congestion control配置</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210811150851262.png" alt="image-20210811150851262" /></p>
+<p><code>sysctl net.ipv4.tcp_congestion_control=lia/olia/wvegas/balia/mctcpdesync</code></p>
+<p><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/rfc6356/"><code>lia</code> https://datatracker.ietf.org/doc/rfc6356/</a><br />
+<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/draft-khalili-mptcp-congestion-control/"><code>olia</code> https://datatracker.ietf.org/doc/draft-khalili-mptcp-congestion-control/</a><br />
+<a target="_blank" rel="noopener" href="http://tools.ietf.org/html/draft-xu-mptcp-congestion-control/"><code>wvegas</code> http://tools.ietf.org/html/draft-xu-mptcp-congestion-control/</a><br />
+<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/draft-walid-mptcp-congestion-control/"><code>balia</code> https://datatracker.ietf.org/doc/draft-walid-mptcp-congestion-control/</a><br />
+<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/6911722/"><code>DMCTCP</code> https://ieeexplore.ieee.org/abstract/document/6911722/</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/multipath/" rel="tag"># multipath</a>
+              <a href="/tags/mptcp/" rel="tag"># mptcp</a>
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/28/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#path-manager"><span class="nav-number">1.</span> <span class="nav-text"> path manager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#path-manager%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text"> path manager分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#path-manager%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text"> path manager配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scheduler-control"><span class="nav-number">2.</span> <span class="nav-text"> scheduler control</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#scheduler%E5%88%86%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text"> scheduler分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scheduler%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text"> scheduler配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#congestion-control"><span class="nav-number">3.</span> <span class="nav-text"> congestion control</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#congestion-control%E5%88%86%E6%9E%90"><span class="nav-number">3.1.</span> <span class="nav-text"> congestion control分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#congestion-control%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text"> congestion control配置</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="HUI"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">HUI</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HUI</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">5k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
