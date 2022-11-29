@@ -9,7 +9,7 @@
   dependencies:
     katex "^0.10.2"
 
-"@upupming/hexo-renderer-markdown-it-plus@*":
+"@upupming/hexo-renderer-markdown-it-plus@^2.0.2":
   version "2.0.2"
   resolved "https://registry.npmmirror.com/@upupming/hexo-renderer-markdown-it-plus/-/hexo-renderer-markdown-it-plus-2.0.2.tgz"
   integrity sha512-lFWaGKqtftgxXxXE1AbqU0FC79mq+v05qmOb8wdYNjv1NYic1tssC82zNnFF/xRT3bKyMYT8PZx6phvi6mzEwA==
