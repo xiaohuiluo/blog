@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Blog of HUI
+title: HUI
 subtitle: ''
 description: ''
 keywords:
@@ -106,6 +106,16 @@ symbols_count_time:
   total_time: true
   exclude_codeblock: false
 
+# Markdown-it config
+markdown_it_plus:
+    highlight: true
+    html: true
+    xhtmlOut: true
+    breaks: true
+    langPrefix:
+    linkify: true
+    typographer:
+    quotes: “”‘’
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
