@@ -34,6 +34,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Hexo Build
+        run: hexo c && hexo g
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
