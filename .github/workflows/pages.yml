@@ -23,7 +23,11 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-npm-cache
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm install hexo-symbols-count-time -g
+          npm un hexo-renderer-marked --save
+          npm i @upupming/hexo-renderer-markdown-it-plus -g
+          npm install
       - name: Build
         run: npm run build
       - name: Deploy
