@@ -1,5 +1,5 @@
 ---
-title: categories
-date: 2022-11-29 10:12:27
-type: "categories"
+title: 分类
+layout: categories
+comments: false
 ---

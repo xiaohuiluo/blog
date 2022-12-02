@@ -1,17 +1,17 @@
 ---
 title: Mptcp linux kernel implementation
 date: 2022-11-28 11:19:15
-tags: 
-- multipath
-- mptcp
-- linux
 categories: 
-- network
+	- network
+tags: 
+	- multipath
+	- mptcp
+	- linux
+toc: true
+mathjax: true
 ---
 
 最近做一些多路径相关研究，主要有mptcp和mpquic两种方式，多路径最终在于解决3个问题：**多条路径如何建立**、**多条路径如何分配数据包**以及**多条路径如何做好拥塞控制**。
-
-<!--more-->
 
 ![image-20210817150015171](https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210817150015171.png)
 
