@@ -11,7 +11,7 @@
     </li>
   </ul>
 </blockquote>
-<% if(theme.profile && theme.profile.enabled) { %>
+<% if(theme.profile && theme.profile.enabled && !theme.profile.articleSelfBlock) { %>
 <% var profile = theme.profile; %>
 <div class="panel panel-default panel-badger">
   <div class="panel-body">
@@ -21,10 +21,10 @@
           <img src="<%= ( profile.gravatar ? gravatar(profile.gravatar, 128) : url_for(profile.avatar)) %>" class="img-rounded w-full" alt="">
         </a>
       </div>
-      <div class="media-body">
-        <h3 class="media-heading"><a href="<%= profile.follow %>" target="_blank"><span class="text-dark"><%= profile.author %></span><small class="ml-1x"><%= profile.author_title %></small></a></h3>
-        <div><%= profile.author_description %></div>
-      </div>
+        <div class="media-body">
+          <h3 class="media-heading"><a href="<%= profile.follow %>" target="_blank"><span class="text-dark"><%= profile.author %></span><small class="ml-1x"><%= profile.author_title %></small></a></h3>
+          <div><%= profile.author_description %></div>
+        </div>
     </figure>
   </div>
 </div>
