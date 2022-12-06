@@ -13,7 +13,7 @@ mathjax: true
 
 最近做一些多路径相关研究，主要有mptcp和mpquic两种方式，多路径最终在于解决3个问题：**多条路径如何建立**、**多条路径如何分配数据包**以及**多条路径如何做好拥塞控制**。
 
-![image-20210817150015171](https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210817150015171.png)
+![multi-path](https://gitee.com/martrix/blog-images/raw/master/img/20221206-152028.png)
 
 这里介绍一下mptcp，mptcp linux内核实现针对多路径问题分为如下三个核心部分，使用mptcp时根据不同使用场景对其进行不同的配置是很有必要的。
 
@@ -67,7 +67,7 @@ config MPTCP_NETLINK
 
 ### path manager配置
 
-![image-20210812102200625](https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210812102200625.png)
+![path-manager](https://gitee.com/martrix/blog-images/raw/master/img/20221206-152355.png)
 
 `sysctl net.mptcp.mptcp_path_manager=default/fullmesh/ndiffports/binder/netlink`
 
@@ -110,7 +110,7 @@ Linux最新mptcp_v0.95实现中一共包含如下4种多路径调度算法，默
 
 ### scheduler配置
 
-![image-20210811151032091](https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210811151032091.png)
+![scheduler](https://gitee.com/martrix/blog-images/raw/master/img/20221206-154231.png)
 
 `sysctl net.mptcp.mptcp_scheduler=default/roundrobin/redundant/blest`
 
@@ -177,7 +177,7 @@ config TCP_CONG_MCTCPDESYNC
 
 ### congestion control配置
 
-![image-20210811150851262](https://cdn.jsdelivr.net/gh/xiaohuiluo/images/img/image-20210811150851262.png)
+![congestion control](https://gitee.com/martrix/blog-images/raw/master/img/20221206-154302.png)
 
 `sysctl net.ipv4.tcp_congestion_control=lia/olia/wvegas/balia/mctcpdesync`
 
@@ -186,4 +186,6 @@ config TCP_CONG_MCTCPDESYNC
 [`wvegas` http://tools.ietf.org/html/draft-xu-mptcp-congestion-control/](http://tools.ietf.org/html/draft-xu-mptcp-congestion-control/)
 [`balia` https://datatracker.ietf.org/doc/draft-walid-mptcp-congestion-control/](https://datatracker.ietf.org/doc/draft-walid-mptcp-congestion-control/)
 [`DMCTCP` https://ieeexplore.ieee.org/abstract/document/6911722/](https://ieeexplore.ieee.org/abstract/document/6911722/)
+
+
 
