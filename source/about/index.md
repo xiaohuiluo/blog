@@ -5,4 +5,4 @@ layout: about
 comments: false
 sidebar: custom
 ---
-A simple dever
+A network&software dever
