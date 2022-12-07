@@ -1,5 +1,5 @@
 ---
-title: lpm
+title: LPM
 date: 2022-12-07 16:57:24
 categories: 
 	- network
@@ -7,9 +7,9 @@ tags:
 	- lpm
 ---
 
-# 网络芯片中的最长匹配
-
 本文源自Juniper工程师关于LPM最长匹配从算法到芯片实现上的一篇博文，个人觉得讲解的不错，简单翻译了一下，有兴趣也可去翻墙去看原文https://www.linkedin.com/pulse/longest-prefix-matching-networking-chips-sharada-yeluri/。
+
+<!--more -->
 
 ## 简介
 

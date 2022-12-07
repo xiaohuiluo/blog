@@ -13,6 +13,8 @@ mathjax: true
 
 最近做一些多路径相关研究，主要有mptcp和mpquic两种方式，多路径最终在于解决3个问题：**多条路径如何建立**、**多条路径如何分配数据包**以及**多条路径如何做好拥塞控制**。
 
+<!-- more -->
+
 ![multi-path](https://gitee.com/martrix/blog-images/raw/master/img/20221206-152028.png)
 
 这里介绍一下mptcp，mptcp linux内核实现针对多路径问题分为如下三个核心部分，使用mptcp时根据不同使用场景对其进行不同的配置是很有必要的。
