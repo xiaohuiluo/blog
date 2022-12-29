@@ -9,8 +9,6 @@ tags:
 	- subsystem
 ---
 
-## ONOS SubSystems
-
 ONOS核心由各个子系统构成，这些子系统一方面提供网络操作系统核心功能，一方面为用户扩展开发提供支持。
 
 <!--more-->
