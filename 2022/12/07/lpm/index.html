@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><script>var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?cecc1da264cf1b9844644fd6f454fcdd";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();</script><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="referrer" content="no-referrer"><title>LPM - HUI</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="HUI"><meta name="msapplication-TileImage" content="/img/favicon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="HUI"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本文源自Juniper工程师关于LPM最长匹配从算法到芯片实现上的一篇博文，个人觉得讲解的不错，简单翻译了一下，有兴趣也可去翻墙去看原文https:&amp;#x2F;&amp;#x2F;www.linkedin.com&amp;#x2F;pulse&amp;#x2F;longest-prefix-matching-networking-chips-sharada-yeluri&amp;#x2F;。"><meta property="og:type" content="blog"><meta property="og:title" content="LPM"><meta property="og:url" content="https://xiaohuiluo.github.io/2022/12/07/lpm/"><meta property="og:site_name" content="HUI"><meta property="og:description" content="本文源自Juniper工程师关于LPM最长匹配从算法到芯片实现上的一篇博文，个人觉得讲解的不错，简单翻译了一下，有兴趣也可去翻墙去看原文https:&amp;#x2F;&amp;#x2F;www.linkedin.com&amp;#x2F;pulse&amp;#x2F;longest-prefix-matching-networking-chips-sharada-yeluri&amp;#x2F;。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221009-142155.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221101-144259.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221009-155910.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221009-160143.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221009-170300.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221009-174239.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221010-093208.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221010-094053.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221010-100022.png"><meta property="article:published_time" content="2022-12-07T08:57:24.000Z"><meta property="article:modified_time" content="2022-12-07T09:09:15.055Z"><meta property="article:author" content="HUI"><meta property="article:tag" content="lpm"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://gitee.com/martrix/blog-images/raw/master/img/20221009-142155.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaohuiluo.github.io/2022/12/07/lpm/"},"headline":"LPM","image":["https://gitee.com/martrix/blog-images/raw/master/img/20221009-142155.png","https://gitee.com/martrix/blog-images/raw/master/img/20221101-144259.png","https://gitee.com/martrix/blog-images/raw/master/img/20221009-155910.png","https://gitee.com/martrix/blog-images/raw/master/img/20221009-160143.png","https://gitee.com/martrix/blog-images/raw/master/img/20221009-170300.png","https://gitee.com/martrix/blog-images/raw/master/img/20221009-174239.png","https://gitee.com/martrix/blog-images/raw/master/img/20221010-093208.png","https://gitee.com/martrix/blog-images/raw/master/img/20221010-094053.png","https://gitee.com/martrix/blog-images/raw/master/img/20221010-100022.png"],"datePublished":"2022-12-07T08:57:24.000Z","dateModified":"2022-12-07T09:09:15.055Z","author":{"@type":"Person","name":"HUI"},"publisher":{"@type":"Organization","name":"HUI","logo":{"@type":"ImageObject","url":"https://xiaohuiluo.github.io/img/logo.png"}},"description":"本文源自Juniper工程师关于LPM最长匹配从算法到芯片实现上的一篇博文，个人觉得讲解的不错，简单翻译了一下，有兴趣也可去翻墙去看原文https:&#x2F;&#x2F;www.linkedin.com&#x2F;pulse&#x2F;longest-prefix-matching-networking-chips-sharada-yeluri&#x2F;。"}</script><link rel="canonical" href="https://xiaohuiluo.github.io/2022/12/07/lpm/"><link rel="alternate" href="/atom.xml" title="HUI" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.2.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/vs.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.png" alt="HUI" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-12-07T08:57:24.000Z" title="12/7/2022, 4:57:24 PM">2022-12-07</time>发表</span><span class="level-item"><time dateTime="2022-12-07T09:09:15.055Z" title="12/7/2022, 5:09:15 PM">2022-12-07</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/network/">network</a></span><span class="level-item">1 小时读完 (大约7534个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">LPM</h1><div class="content"><p>本文源自Juniper工程师关于LPM最长匹配从算法到芯片实现上的一篇博文，个人觉得讲解的不错，简单翻译了一下，有兴趣也可去翻墙去看原文<a target="_blank" rel="noopener" href="https://www.linkedin.com/pulse/longest-prefix-matching-networking-chips-sharada-yeluri/%E3%80%82">https://www.linkedin.com/pulse/longest-prefix-matching-networking-chips-sharada-yeluri/。</a></p>
+<span id="more"></span>
+<h2 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h2>
+<p>本文解释了<strong>FIB</strong>(Forwarding Information Base，转发信息库)，IP转发中的<strong>LPM</strong>(longest prefix match，最长匹配算法)的基本概念，以及其是如何随着时间而不断演进发展的，重点在于其在各种硬件实现选择及在芯片面积/功率和性能方面的相互比较，本文旨在作为高级入门文章。</p>
+<h2 id="基础"><a class="markdownIt-Anchor" href="#基础"></a> 基础</h2>
+<p>在网络系统(路由器或交换机)中，各种处理过程被划分为<strong>平面</strong>，平面是一个抽象的概念，最长引用的平面是控制平面和数据平面(也被称为转发平面)。</p>
+<p>控制平面中执行的任务决定了应该如何处理和转发数据包。控制平面在后台执行这些任务并生成数据平面中的表项。数据平面从网络芯片中的多个物理链路以数据包的形式接收网络流量，检查数据包内的部分或者全部L2/L3/L4协议头，并采取动作(Actions)。包处理(Packet Processing)用于描述检查包头和决定下一步的任务，该动作可以决定数据包必须通过其离开路由器的物理接口(使用控制平面生成的路由表项)，排队和调度以从该接口转发出去，或者如果数据包违反流量规则/安全检查则丢弃数据包，或者发送到控制平面进一步检查等等。</p>
+<p>控制平面维护<strong>RIB</strong>(Routing Information Database，路由信息数据库)，其中包含通过后台运行的路由协议发现的路由。路由通常分为直接路由、静态路由和动态路由。控制平面软件将<strong>路由先优化和压缩</strong>RIB表项中的信息得到安装到网络芯片内的FIB表项，RIB压缩本身就是有趣的话题，本文不做介绍。</p>
+<p>FIB存储在片上或片外存储器(SRAM、HBM/DRAM或TCAM)中，它包含的信息刚好足以将数据包转发到它们的下一个目的地或下一跳。这些表项由控制平面在后台更新(安装、删除)，而不会中断数据平面流量。</p>
+<p>对于IP转发，FIB通常包含IP地址、子网掩码(或IP前缀)和下一跳。根据硬件实现，下一跳可以直接指示数据包应该通过哪个物理接口沿着其路径转发多最终目的地，或者它可以指向另一个表中的一个条目，该条目包含一组关于如何计算数据包的传出接口的指令。</p>
+<p>在本次讨论中，我们为FIB条目使用简化格式，其中包含IPv4地址、子网掩码和传出以太网接口。实际上的FIB结构很复杂，可以在IPv4和IPv6地址之间共享，包含几个与目的地址一起用于查找的附加字段，并且包含更多信息来指定数据包各种动作。</p>
+<p>下表显示了IPv4地址的概念FIB表，IPv6条目看起来与此类似，但与IPv4相比，它们具有更宽的地址(128bits).</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221009-142155.png" alt="ipv4" /></p>
+<p>如果FIB要包含地球上使用的每一个IP地址，它将需要数十亿个条目，而且不可能将它们存储在硬件中，例如，一个32位的IPv4地址将需要大约40亿个条目。因此，路由器通常会聚合未直接连接到其传出的目的的路由(基于子网)，子网掩码只是硬件仅查看传入数据包的目的地址中掩码中位设置为1的位。</p>
+<p>例如，对于网络目的地址为192.168.0.0和网络掩码为255.255.255.0的条目，当扩展为二进制格式时，掩码的高16位被设置为1，这个数字<strong>16称为前缀长度</strong>，FIB条目称为<strong>192.168.0.0/16</strong>(或192.168.*)。将子网掩码存储为前缀长度会减少FIB表中的条目宽度。</p>
+<p>在上面FIB表中，尽管为了便于理解，所有的前缀长度都是2的幂，但是对于IPv4地址，允许在0~32之间的任何前缀长度，默认使用前缀长度0(网络掩码0.0.0.0)，该条目为当它与任何其他具有非0前缀的条目不匹配时硬件选择的条目，前缀长度为32表示该条目中IP地址的所有位都应用与比较。这些前缀是Internet可扩展性的关键，一个典型的IPv4 FIB包含大约90万个条目(互联网表中使用的所有IPv4前缀大小)，而如果每个IP地址都需要一个唯一的条目，则有数十亿个条目。</p>
+<h2 id="什么是lpm"><a class="markdownIt-Anchor" href="#什么是lpm"></a> 什么是LPM</h2>
+<p>在IP转发过程中，当网络芯片收到一个IP数据包时，它会使用目标IP地址搜索FIB以找到所有匹配的条目，在确定的条目是否匹配时，它使用存储在FIB中的前缀长度来屏蔽与比较无关的目标地址位。例如，如果一个数据包的目的IP地址是192.168.1.108，它匹配FIB表中条目为1、2、3和6。在所有的匹配中，<strong>前缀最长的匹配是条目6</strong>，它表示到达下一跳的最精确方式，硬件应该选择这个条目。因此，所有匹配的条目中最具体的条目–具有最长前缀长度的条目–称为最长前缀匹配(LPM)。这些重叠前缀在转发表中非常常见，以便在数据包通过多个路由器到达目的地时为数据包提供最佳路径。</p>
+<h2 id="lpm实现的挑战"><a class="markdownIt-Anchor" href="#lpm实现的挑战"></a> LPM实现的挑战</h2>
+<p>在上面的简化示例中，仅在路由表中显示了8个条目，但是，典型的高端路由器中的FIB数据库有数百万个条目，随着IPv6转发的广泛采用和IPv4地址空间的耗尽，硬件中保存更多的条目的要求不断增长。此外，网络芯片供应商在每个芯片中封装了越来越多的带宽，这给数据包处理管道/引擎以非常高的速率执行这些LPM查找带来了很大的负担。</p>
+<p>以14.4T带宽的高端网络芯片为例，为了满足64B数据包的线路速率(以太网接口上最小的数据包大小)，它需要处理数据包并以每秒210亿个数据包或每次LPM查找不到46ps的速度进行查找。支持如此高的数据包处理速率将需要许多数据包处理管道来分配工作负载，这反过来又会增加如此多的硬件面积，以至于即使在标线限制下也不可能将所有这些都安装在一个裸片中。</p>
+<p>许多网络芯片会考虑典型的网络负载，并增加其数据包处理管道满足线速的最小数据包大小，在上面的示例中，如果我们仅满足350B及以上数据包的线速，则处理速率会下降到每个数据包约200ps，假设有四个数据包处理管道，每个管道都需要在200x4=800ps内处理数据包并执行LPM，这个意味着在1.25GHz时钟频率下每个周期一个数据包。</p>
+<p>LPM的意义在于，在1.25GHz的一个时钟周期内，它需要解析FIB表中的数百万个条目，并找到包含最长前缀的条目！显然，通读每条条目并找到最长的前缀匹配条目并不能满足要求。</p>
+<p>此外，由于大尺寸，FIB表通常在所有处理管道之间共享，这个增加了这些表必须支持的访问数量的额外负担。一些应用在FIB中需要超过1000万条路由条目，而扩展SRAM以容纳这么多路由实际上不可能的。最终，FIB表的一部分溢出到外部存储器中，外部存储器带宽也不便宜，例如一个HBM3部件可提供约5Tbps的可用带宽，该外部存储器通常在数据包缓冲和数据包处理表之间共享。由于beachfront限制(多芯片模块中Serdes或die-to-die接口占据了大部分区域)，向封装中添加更多HBM部件通常不容易，鉴于外部存储器的带宽有限，网络架构师在设计查找方式，即并非每个LPM都需要访问外部存储器表。</p>
+<h2 id="lpm架构"><a class="markdownIt-Anchor" href="#lpm架构"></a> LPM架构</h2>
+<p>LPM的任何硬件流水线实现，连同满足高处理速率，都应该最小化这个过程的整体面积和功耗，此外，该架构应该能够更快地从控制平面软件中插入和删除路由表项</p>
+<p>，有几种方法可以解决这个问题，在本文中，将介绍业界常用几种：</p>
+<ul>
+<li>Tree/基于trie结构</li>
+<li>TCAMs</li>
+<li>Hybrid(TCAMs/Tries)</li>
+<li>Bloom过滤器和哈希表</li>
+</ul>
+<h3 id="treetrie结构"><a class="markdownIt-Anchor" href="#treetrie结构"></a> Tree/trie结构</h3>
+<p>一个未压缩的二叉树，其中每个节点测试一位查找键(又名目标IP地址或DIP)是可视化和实现最长前缀匹配查找的最简单方法之一。为了用图表简洁说明这个例子，现在假设IP地址只有4位，FIB中条目10*、0011、0110和1000，下图表示4位IP的未压缩树带有路由的节点以绿色突出显示的地址。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221101-144259.png" alt="1664774619728" /></p>
+<p>根节点包含默认路由，每个节点必须包含要在key中测试的位的位置和两个指针(用于根据位值0或1向左还是向右分支)、指示该节点是否具有附加路由的位以及下一跳信息。key值(IP地址)未显示存储在节点中，如果没有压缩，这棵树将需要内存中数十亿个条目来存储每个节点的信息，在最坏的情况下，需要128次内存访问才能找到IPv6地址最长前缀匹配。</p>
+<p>在所有的使用二叉树的硬件LPM实现中，未使用的节点被剪除，节点被压缩，通过这样做，大大减少了节点数量以及所需的内存访问次数。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221009-155910.png" alt="No alt text provided for this image" /></p>
+<p>上面的树可以进一步压缩，其中只有一个子节点的父节点合并在一起(modified Patricia trie, Juniper Networks patent)，如下图所示，这需要将部分key值存储在合并的每个节点中。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221009-160143.png" alt="No alt text provided for this image" /></p>
+<p>对于上图所示的压缩树，硬件从根节点开始，并将数据包的current_nexthop设置为附加到根节点的默认路由，硬件根据DIP中的最高有效位进入下一个节点(向左或向右)，它将bits_to_ignore更新为1，因为已经检查了最高有效位。</p>
+<p>任何节点的评估如下：</p>
+<ol>
+<li>在屏蔽掉最重要的bits_to_ignore之后，将目标IP地址中的下一个bits_to_match位数与节点处的key值进行比较，如果不匹配，则终止查找，如果匹配则转到2</li>
+<li>如果节点不是叶节点(左右节点均为空)，硬件查看bits_to_ignore+bits_to_match位之后的位以采取左支或右支(如果该位为0，则采取左分支，否则采取右分支)，如果当前节点有附加路由，则用该节点的下一跳更新current_nexthop</li>
+<li>如果要采用的分支为空指针，则终止查找</li>
+<li>如果要采取的分支不是空指针，则继续查找指针指向的子节点，bits_to_ignore由当前节点的匹配和比较的位数更新</li>
+</ol>
+<p>每当处理终止于硬件的current_nexthop状态中存储的值指示LPM查找的下一跳，上述评估可以使用硬件中的专用状态机一次遍历一个数据包的LPM(run_to_completion)。</p>
+<p>这种压缩的二叉树还会导致对共享内存的多次访问，并且评估时间不确定。例如，在具有100万条路由的2-way Patricia trie中，查找的平均需要对内存中的节点进行20次访问，很难对这些访问进行流水线化，因为它需要将每个阶段的节点存储在属于每个流水线阶段的单独内存结构中，这可能导致在添加/更新路由是这些内存使用效率低下。</p>
+<p>在这些结构中添加/删除条目通常由控制平面软件通过在内存中的单独空间中创建中间界都机器子节点副本，并更新新父节点的指针以指向新的节点来完成。尽管它需要额外的内存，但更新对流量的干扰最小。</p>
+<p>LPM算法处理有许多变体，其中尝试优化以减少阶段数(Stage)、存储或两者的平衡。尽管trie实现更简单，但是由于大量的内存访问，它们不能很好地扩展每秒十亿次的LPM处理，大多数高带宽网络芯片已经拜托纯粹的trie实现。</p>
+<h3 id="tcams"><a class="markdownIt-Anchor" href="#tcams"></a> TCAMs</h3>
+<p>TCAM(ternary content-addressable memory，三元内容寻址存储器)是一种专用高速存储器，可以在一个周期内搜索其所有内容，与二进制相反，三进制表示内存使用三个不同的输入(0、1或x)存储和查询数据的能力。这里的状态x是无关紧要的，无关状态是通过TCAM条目中每个存储单元添加一个掩码位来实现。因此，一个32位宽的TCAM条目包含32个(值、掩码)对。</p>
+<p>为了更好地解释这个概念，请使用上面的FIB表中条目 <code>#2(192.168.0.0/16)</code>，二进制格式的地址为<code>11000000 10101000 00000000 00000000</code>，由于我们仅对匹配高16位感兴趣，因此该地址对于的掩码位为<code>11111111 11111111 00000000 00000000</code>。</p>
+<p>TCAM中每个存储单元都包含使用掩码掩后与0和1进行比较的电路，然后，将数据字中每个存储单元的匹配输出组合起来，形成每个TCAM条目的最终匹配结果，此外，TCAM还具有额外的电路，用于查看所有匹配的TCAM条目并输出第一个匹配条目的索引，一些TCAM还提供所有匹配条目的索引。</p>
+<p>在TCAM中存储FIB条目时，对于每个FIB表，软件根据前缀长度对条目进行降序排列，并将最大的前缀长度条目存储在较低的索引处。</p>
+<p>例如，示例中FIB表可以存储在TCAM中，如下所示：</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221009-170300.png" alt="No alt text provided for this image" /></p>
+<p>现在，当一个目标IP地址为192.168.1.101的数据包时，在TCAM中查找时，将输出&quot;3&quot;作为匹配的条目，每个条目的下一跳/动作可以存储在单独的片上存储器中，可以使用TCAM查找结果访问该存储器以确定数据包下一跳，以上是如何使用TCAM执行LPM的非常简化的描述。</p>
+<p>但是，TCAM的基本问题是每个存储单元需要接近16个晶体管(相比之下，SRAM单元需要4~6个晶体管，DRAM单元需要1个晶体管)。因。很难在TCAM中打包具有数百万条目的大型FIB表，嵌入式TCAM的深度也受到限制(大约4K条目)，以便在一个周期内进行比较。大于4K条目的FIB需要多个TCAM库，需要并行访问，此外，由于每个搜索操作都涉及激活所有条目，因此每次查找都会消耗大量功率。</p>
+<p>TCAM仍然是实现防火墙(访问控制列表)、QoS功能和数据包分类的流行选择，因为这些功能需要的规模远小于FIB表，如今，为了平衡大型FIB的功率/面积和性能，一些路由芯片供应商使用混合方式，将TCAM的优点和trie结构相结合。</p>
+<h3 id="混合方法tcam根节点的trie结构"><a class="markdownIt-Anchor" href="#混合方法tcam根节点的trie结构"></a> 混合方法(TCAM根节点的trie结构)</h3>
+<p>在混合方法中，trie结构根节点出的大型TCAM可以减少结构中的阶段数(Stages)，例如，对于IPv4路由，TCAM可以包含MSB 16位地址，TCAM中查找可能会产生匹配，其结果指示匹配的位数以及指向子节点的指针。</p>
+<p>即使在根节点有TCAM，上一节中有限的2路或4路节点的Patricaia trie结构仍然可能导致许多内存访问，限制阶段(从而限制内存访问)的一种方法是使N路节点中的数字N变大，并稍微修改方案以增加如何选择子节点的灵活性。例如，有TCAM匹配指向的阶段1中的节点可能包含一个4路条目，每个条目都包含key(IP地址/前缀长度)和忽略节点key和传入数据包DIP之间的最高位bits_to_ignore后要匹配的位数。</p>
+<p>例如，如果数据包的DIP已经与TCAM中的IP地址的16位MSB匹配，则下一个节点可以从DIP的第17位开始比较，这里匹配可以结束LPM处理(如果条目的子指针为空)，也可以指向下一个子节点。</p>
+<p>第二个节点可以包含具有相似条目的4或8路节点，第二个节点的匹配可以终止搜索或指向节点条目驻留在外部存储器中的第三阶段。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221009-174239.png" alt="No alt text provided for this image" /></p>
+<p>如果活动前缀均匀分布在所有条目/节点上，则上述方法效果很好，如果更多的路由集中在几个第一阶段的节点上，更多的路由最终会进入带宽有限的外部存储器。这个瓶颈一直持续到控制平面软件能够从TCAM中的根节点开始<strong>重新平衡整颗树</strong>，软件反应时间很长，当节点重新平衡时，流量模式会再次发生变化。</p>
+<p>但是，这种方法有几个优点，trie结构具有固定数量的阶段(上图中的3个阶段)，因此，具有确定的处理时间。对于大多数IP查找，每个LPM查找只需要两次<strong>片上SRAM</strong>访问，因为512K IPv4条目可以驻留在片上，内存约为64Mbits。</p>
+<p>对于350B数据包的14.4Tbps芯片的线速示例，四个数据包处理管道中的每个都必须每个周期处理一个数据包，如果数据包的每个LPM查找都涉及2次片上存储器访问，则保存FIB表的SRAM结构需要在每个周期提供至少8次访问(4个流水线x每个流水线2次访问)。</p>
+<p>为了提供如此高的带宽，FIB表通常被划分为许多逻辑库，并且为来自这些库的请求者的访问提供繁重的stats-mutxing，这增加了由于瞬时热库引起的读取响应的可变延迟。此外多处理引擎之间共享的大型片上存储器驻留在中央位置，并且在请求客户端和中央结构之间具有100多个周期的延迟。因此，即使使用片上结构，每个数据包多次访问它们也会增加数据包处理的可变延迟，在数据移动期间消耗额外的功率，并降低固定流水线数据包处理的好处。</p>
+<p>因此，对于流水线数据包处理架构，必须将片上FIB表的访问减少到每个数据包一次访问，并且偶尔访问片外表，这就是布隆过滤器和哈希表需要解决的问题。</p>
+<h3 id="bloom过滤器hash表"><a class="markdownIt-Anchor" href="#bloom过滤器hash表"></a> Bloom过滤器/Hash表</h3>
+<p>维基百科说： “布隆过滤器是一种节省空间的概率数据结构，用于测试元素是否是集合中的成员，可能出现误报，但是不会发生误报，，<strong>对元素的查询返回可能在集合中或绝对不在系列中</strong>。”</p>
+<p>布隆过滤器是具有K个不同散列函数的M位数组，可以通过使用K个不同的散列函数对元素进行散列并将散列结果指向的K个位置在布隆过滤器数组中设置为1来将元素添加到集合中。</p>
+<p>布隆过滤器如何帮助减少对大型FIB结构的访问次数？Juniper Networks在这方面有几项专利。</p>
+<p>高维度的概念如下(实际实现要复杂得多！)，FIB条目首先填充为<strong>哈希表</strong>，一个典型的哈希表条目包含IP地址、前缀长度、下一跳和动作。为了解决散列冲突，可以使用<strong>杜鹃散列方案</strong>，其中使用两个不同的散列函数对新路由的key(用前缀长度位掩码的IP地址)进行散列，以获得条目的两个可以写的位置(每个散列表一个)，该条目被写入空白位置之一，如果两个位置都被占用，则软件可以使用布谷鸟动作重新洗牌(有关更多请参考wiki)，所有这些都由控制平面软件完成以填充哈希表，数据平面逻辑完全不感知这点。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221010-093208.png" alt="No alt text provided for this image" /></p>
+<p>控制平面软件更新布隆过滤器如下：</p>
+<ol>
+<li>从一个空的M位布隆过滤器数组开始</li>
+<li>然后对于FIB哈希表中的每个条目，通过从IP地址中获取为的前缀长度来构造一个key(其他位被清零)</li>
+<li>使用该Key，评估K个不同的哈希函数以获得M位数组内的K个不同索引，所有的K个位置都设置为1</li>
+<li>对FIB表中的每个条目以及每次在FIB表中更新路由时重复步骤2、3和4。</li>
+</ol>
+<p>在下图中，FIB表(表1)的每个条目都经过了3次散列(K=3)，并设置了布隆过滤器数组中的总位数应至少是FIB表条目数的8倍；否则布隆过滤器中的大部分位将被设置，并且误报率增加。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221010-094053.png" alt="No alt text provided for this image" /></p>
+<p>布隆过滤器位也可以在逻辑上进行分区，为不同的前缀长度范围提供不同数量的存储体，为前缀长度范围分配的布隆过滤器位数可能取决于FIB表中该范围内的有效前缀数量。</p>
+<p>该软件还为每种类型的查找(例如IPv4或IPv6)维护前缀长度结构，其中包含FIB表中针对该查找类型按降序排列所有有效前缀长度。IPv4和IPv6的前缀长度总数理论限制分别为32和128。</p>
+<p>使用布隆过滤器进行LPM时，硬件的第一步是获取特定查找类型的前缀长度排序列表，然后，通过使用排序的前缀长度屏蔽数据包的目标IP地址中的位来探测布隆过滤器的这些前缀长度，并且对于每个前缀长度，使用软件用来填充的相同哈希函数访问布隆过滤器K次布隆过滤器。如果所有的K个位置都是&quot;1&quot;，那么该键很可能在FIB表中，这是如此简单。</p>
+<p>布隆过滤器的每个探测都涉及访问布隆过滤器数组的K个不同位，K通常为3或4。每个访问量子只有一位，通过在前缀范围和散列函数之间对于布隆过滤器数组进行逻辑分区，每个周期可以从布隆过滤器库中进行多达16个前缀长度探测。</p>
+<p>从探测结果来看，导致布隆过滤器匹配的最大前缀长度很可能出现在FIB表中，使用该key访问FIB哈希表。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221010-100022.png" alt="No alt text provided for this image" /></p>
+<p>匹配条目是存储在哈希表条目中的key与用于访问哈希表的key相匹配的条目，如果左右哈希表中的条目不匹配，则在布隆过滤器中匹配的下一个最长前缀长度用于访问FIB表中的新条目，重复此过程，直到条目匹配。</p>
+<p>如果布隆过滤器数组的大小正确，则误报率可能低于5%，假设一个IPv4前缀长度表通常平均包含大约8个前缀，那么理论上需要读取FIB表的最大次数为1.4(1+8*0.05)。它少于在所有其他方案中需要访问FIB结构的次数，对于IPv6，由于前缀范围更大，可以将前缀长度聚合为前缀范围，在继续探测该范围内的前缀长度前，可以探测一个单独的布隆过滤器数组以查看哪个最大前缀长度范围有匹配。</p>
+<p>使用布隆过滤器来减少访问中央FIB结构有几个优点。数据移动减少，因为评价而言每个LPM访问需要大约1.4次内存访问，但是与任何哈希表一样，如果表过载过多，则会导致哈希冲突，并且对软件需要重新平衡条目，与其他机制一样，片上内存是有限的。可以将查找的所有哈希表保存在外部存储器中以实现更大的规模，但是为了通过哈希表的外部存储访问来维持线速，通常使用大型片上高速缓存来保持芯片上经常访问的路由。</p>
+<p>布隆过滤器方法减少了中央或外部存储器FIB表读取的数量，代价是每个处理管道的布隆过滤器位阵列，虽然由于添加了布隆过滤器逻辑，整体性能可能会更好，但是由于额外的布隆过滤器阵列，与混合方法相比，这种方法在该领域可能没有那么优越，哈希表还需要20%的额外条目来减少哈希冲突，但是，在混合方法中存在类似的低效率，其中阶段1~2中的节点可能基于路由模式稀疏地填充。</p>
+<h3 id="缓存频繁访问fib条目"><a class="markdownIt-Anchor" href="#缓存频繁访问fib条目"></a> 缓存频繁访问FIB条目</h3>
+<p>在所有方法中，每个级别的本地缓存层次结构可以用于减少查找、片上和外部存储访问的数量，这些缓存的有效性在很大程度上取决于流量模式、活动路由的数量以及添加/删除新路由的速率。</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<p>最有效的实现最长前缀匹配被认为是网络芯片的圣杯，随着互联网表项的快速增长，以及每秒数十亿数据包流经网络芯片，LPM继续挑战网络芯片架构师，随着摩尔定律的终结，片上存储器几乎无法在新工艺节点中扩展，并且外部存储器超额使用，因此减少存储器占用空间和进行LPM的带宽要求变得更要重要，我们已经讨论了几种流行实现方法。</p>
+<p>对于每秒需要数十亿次LPM查找的高端路由器，基于混合和布隆过滤器的方法更受欢迎，因此它们的规模和总体上更确定的完成时间，除了加快LPM的硬件创新外，控制平面中的路由表压缩(在路由更新时可以聚合前缀)也有助于减少FIB表的内存占用并减少外部内存访问。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>LPM</p><p><a href="https://xiaohuiluo.github.io/2022/12/07/lpm/">https://xiaohuiluo.github.io/2022/12/07/lpm/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>HUI</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-12-07</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2022-12-07</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/lpm/">lpm</a></div><div class="a2a_kit a2a_kit_size_32 a2a_default_style"><a class="a2a_dd" target="_blank" rel="noopener" href="https://www.addtoany.com/share"></a><a class="a2a_button_facebook"></a><a class="a2a_button_twitter"></a><a class="a2a_button_email"></a></div><script async src="https://static.addtoany.com/menu/page.js"></script><script src="https://static.addtoany.com/menu/page.js" defer></script></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/12/13/onos-overview/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">ONOS Overview</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/11/28/mptcp%20linux%20kernel%20implementation/"><span class="level-item">Mptcp linux kernel implementation</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="SOHUCS" sid="2022/12/07/lpm/"></div><script charset="utf-8" src="https://changyan.sohu.com/upload/changyan.js"></script><script>window.changyan.api.config({appid: 'cywpxBL0d',conf: 'prod_ccdfddbc3432d3184fac703760a8e1f4'});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/avatar.png" alt="HUI"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">HUI</p><p class="is-size-6 is-block">好好学习,天天向上</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shenzhen</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">1</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">6</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/xiaohuiluo" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/xiaohuiluo"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><!--!--><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/network/"><span class="level-start"><span class="level-item">network</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-13T02:30:09.000Z">2022-12-13</time></p><p class="title"><a href="/2022/12/13/onos-overview/">ONOS Overview</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-07T08:57:24.000Z">2022-12-07</time></p><p class="title"><a href="/2022/12/07/lpm/">LPM</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-11-28T03:19:15.000Z">2022-11-28</time></p><p class="title"><a href="/2022/11/28/mptcp%20linux%20kernel%20implementation/">Mptcp linux kernel implementation</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/11/"><span class="level-start"><span class="level-item">十一月 2022</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/linux/"><span class="tag">linux</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/lpm/"><span class="tag">lpm</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mptcp/"><span class="tag">mptcp</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/multipath/"><span class="tag">multipath</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/onos/"><span class="tag">onos</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/sdn/"><span class="tag">sdn</span><span class="tag">1</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.png" alt="HUI" height="28"></a><p class="is-size-7"><span>&copy; 2022 HUI</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

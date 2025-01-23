@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><script>var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?cecc1da264cf1b9844644fd6f454fcdd";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();</script><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="referrer" content="no-referrer"><title>ONOS Overview - HUI</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="HUI"><meta name="msapplication-TileImage" content="/img/favicon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="HUI"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Open Network Operating System (ONOS®) 是下一代SDN&amp;#x2F;NFV的领先的开源SDN控制器之一。"><meta property="og:type" content="blog"><meta property="og:title" content="ONOS Overview"><meta property="og:url" content="https://xiaohuiluo.github.io/2022/12/13/onos-overview/"><meta property="og:site_name" content="HUI"><meta property="og:description" content="Open Network Operating System (ONOS®) 是下一代SDN&amp;#x2F;NFV的领先的开源SDN控制器之一。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221212-170148.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221212-173057.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-085554.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221212-172008.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221212-172853.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-093135.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-093452.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-094409.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-101837.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-095944.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20221213-100010.png"><meta property="article:published_time" content="2022-12-13T02:30:09.000Z"><meta property="article:modified_time" content="2022-12-13T02:33:58.830Z"><meta property="article:author" content="HUI"><meta property="article:tag" content="onos"><meta property="article:tag" content="sdn"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://gitee.com/martrix/blog-images/raw/master/img/20221212-170148.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaohuiluo.github.io/2022/12/13/onos-overview/"},"headline":"ONOS Overview","image":["https://gitee.com/martrix/blog-images/raw/master/img/20221212-170148.png","https://gitee.com/martrix/blog-images/raw/master/img/20221212-173057.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-085554.png","https://gitee.com/martrix/blog-images/raw/master/img/20221212-172008.png","https://gitee.com/martrix/blog-images/raw/master/img/20221212-172853.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-093135.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-093452.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-094409.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-101837.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-095944.png","https://gitee.com/martrix/blog-images/raw/master/img/20221213-100010.png"],"datePublished":"2022-12-13T02:30:09.000Z","dateModified":"2022-12-13T02:33:58.830Z","author":{"@type":"Person","name":"HUI"},"publisher":{"@type":"Organization","name":"HUI","logo":{"@type":"ImageObject","url":"https://xiaohuiluo.github.io/img/logo.png"}},"description":"Open Network Operating System (ONOS®) 是下一代SDN&#x2F;NFV的领先的开源SDN控制器之一。"}</script><link rel="canonical" href="https://xiaohuiluo.github.io/2022/12/13/onos-overview/"><link rel="alternate" href="/atom.xml" title="HUI" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.2.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/vs.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.png" alt="HUI" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-12-13T02:30:09.000Z" title="12/13/2022, 10:30:09 AM">2022-12-13</time>发表</span><span class="level-item"><time dateTime="2022-12-13T02:33:58.830Z" title="12/13/2022, 10:33:58 AM">2022-12-13</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/network/">network</a></span><span class="level-item">9 分钟读完 (大约1296个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">ONOS Overview</h1><div class="content"><p>Open Network Operating System (ONOS®) 是下一代SDN/NFV的领先的开源SDN控制器之一。</p>
+<span id="more"></span>
+<p>目前开源主流SDN控制器主要有ODL(OpenDayLight)和ONOS两大平台，其他的如Ryu、Floodlight等逐渐不再进行更新维护了，ODL和ONOS都基于Java的OSGi架构开发，所以两者在设计理念和开发上基本一致，熟悉其中一个后学习另一个也很容易上手，ONOS由ONF基金会主导，ODL由Linux基金会主导。</p>
+<h2 id="onos架构"><a class="markdownIt-Anchor" href="#onos架构"></a> ONOS架构</h2>
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/20221212-170148.png" alt="onos arth" style="zoom:80%;" />
+<p>ONOS整体架构基于OSGi(Apache Karaf实现)之上，核心提供多个网络相关的核心子系统，南向通过丰富的协议及网元设备行为驱动机制来支撑多厂商多类型设备支持，北向通过北向接口开放网络功能，值得提的是ODL的设计理念和ONOS类似。</p>
+<p>架构特点：</p>
+<ul>
+<li>High-availability, scalability and performance(高可用、可扩展伸缩、高性能)</li>
+<li>Strong abstractions and simplicity to develop apps and solutions(高度抽象及简化apps和方案开发)</li>
+<li>Protocol and device behaviour independence(南向协议及独立设备行为驱动机制-避免厂商锁定)</li>
+<li>Separation of concerns and modularity(解耦及模块化理念)</li>
+</ul>
+<h2 id="onos-osgi"><a class="markdownIt-Anchor" href="#onos-osgi"></a> ONOS OSGi</h2>
+<p>ONOS底层采用Java OSGi架构(Apache Karaf)来构建平台，ODL同样采用了该架构。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221212-173057.png" alt="OSGi" /></p>
+<p>OSGi架构特点：</p>
+<ul>
+<li>Bundles – Bundles are the OSGi components made by the developers.</li>
+<li>Services – The services layer connects bundles in a dynamic way by offering a publish-find-bind model for plain old Java objects.</li>
+<li>Life-Cycle – The API to install, start, stop, update, and uninstall bundles.</li>
+<li>Modules – The layer that defines how a bundle can import and export code.</li>
+<li>Security – The layer that handles the security aspects.</li>
+<li>Execution Environment – Defines what methods and classes are available in a specific platform.</li>
+</ul>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-085554.png" alt="Apache Karaf" /></p>
+<p>Apache Karaf架构实现特点：</p>
+<ul>
+<li>Hot deployment(热部署)</li>
+<li>Dynamic configuration(动态配置)</li>
+<li>Logging system(日志系统)</li>
+<li>Provisioning(应用提供)</li>
+<li>Shell Console(Shell命令行控制台)</li>
+<li>Remote management(远程管理)</li>
+<li>WebConsole(Web控制台)</li>
+<li>Security(安全)</li>
+<li>Instances management(实例管理)</li>
+<li>Docker &amp; Cloud ready(云化容器化支持)</li>
+</ul>
+<p>OSGi(Apache Karaf实现)架构模块化开发、动态配置‘、热部署及完善的web应用平台等特性契合了电信级软件的要求。</p>
+<h2 id="onos子系统"><a class="markdownIt-Anchor" href="#onos子系统"></a> ONOS子系统</h2>
+<p>ONOS子系统提供最核心的网络相关功能，这些功能为上层网络应用开发提供底层接口，子系统设计和实现上采用了相同的理念。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221212-172008.png" alt="onos subsystem" /></p>
+<p>如上红色框部分就是ONOS实现的核心子系统，包含Topology网络拓扑、Link网络连接、Network Cfg网络配置、Flow Rule/Objective流表、Device网络设备、Host网络主机，Packet网络数据包等，子系统大部分采用<strong>Provider-Registry</strong>机制和<strong>Service-Listerner</strong>机制设计理念来达到模块化解耦的目的。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221212-172853.png" alt="onos subsystem provider&amp;listener" /></p>
+<h2 id="onos编译开发工具"><a class="markdownIt-Anchor" href="#onos编译开发工具"></a> ONOS编译开发工具</h2>
+<ul>
+<li>
+<p>编译系统演进(maven --&gt; buck --&gt; <strong>bazel</strong>)，bazel提供大工程快速编译能力</p>
+</li>
+<li>
+<p>自带开发工具</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-093135.png" alt="onos dev tools" /></p>
+</li>
+</ul>
+<h2 id="onos代码结构"><a class="markdownIt-Anchor" href="#onos代码结构"></a> ONOS代码结构</h2>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-093452.png" alt="onos code" /></p>
+<h2 id="onos-app"><a class="markdownIt-Anchor" href="#onos-app"></a> ONOS App</h2>
+<p>ONOS上层网络功能可通过开发ONOS支持的App应用来支持，ONOS内部也有实现丰富的网络App样例(简单的如fwd，dhcp等、复杂的如Trellis，SONA，OpenCORD等解决方案)，用户可直接在onos代码内使用bazel或者外部使用maven开发网络App应用。</p>
+<h3 id="bazel创建app"><a class="markdownIt-Anchor" href="#bazel创建app"></a> bazel创建App</h3>
+<ul>
+<li>
+<p>bazel开发app需要在onos代码统一进行编译</p>
+</li>
+<li>
+<p>新app需要加入到onos项目module</p>
+</li>
+<li>
+<p>bazel build遵循onos要求</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-094409.png" alt="image-20221213094409217" /></p>
+</li>
+</ul>
+<h3 id="maven创建app"><a class="markdownIt-Anchor" href="#maven创建app"></a> maven创建app</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># onos支持版本仓库查询</span></span><br><span class="line"><span class="comment"># https://repo.maven.apache.org/maven2/org/onosproject/onos-bundle-archetype/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 先配置好onos开发环境</span></span><br><span class="line"><span class="comment"># ONOS </span></span><br><span class="line"><span class="built_in">export</span> WORKSPACE=<span class="string">&quot;/home/hui/SDN&quot;</span></span><br><span class="line"><span class="built_in">export</span> ONOS_ROOT=<span class="string">&quot;<span class="variable">$WORKSPACE</span>/onos&quot;</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$ONOS_ROOT</span>/tools/dev/bash_profile</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> ONOS_POM_VERSION=2.1.0</span><br><span class="line"><span class="comment"># 交互式创建 （首次执行会从maven仓库下载较多依赖库）</span></span><br><span class="line">onos-create-app</span><br><span class="line"><span class="comment"># 参数式创建</span></span><br><span class="line">onos-create-app onos-app cn.hui onos-app 1.0.0-SNAPSHOT cn.hui</span><br><span class="line"></span><br><span class="line"><span class="comment"># maven编译下载遇到问题可尝试将maven mirror修改为阿里云mirror等国内mirror</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-101837.png" alt="maven app pom" /></p>
+<p>ONOS App编译生成的.oar文件其实本质上是Karaf中的feature(和ODL中没有本质的区别，因为都是基于Karaf架构)，可以解压.oar看到相应的jar包和feature的xml配置。</p>
+<h2 id="ng-sdn"><a class="markdownIt-Anchor" href="#ng-sdn"></a> NG-SDN</h2>
+<p>值得提一下ONF基金会提出下一代SDN，控制面提出μONOS基于微服务控制器，数据面提供stratum+P4作为下一代SDN的技术栈，有兴趣也可以了解。</p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-095944.png" alt="NG-SDN" /></p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20221213-100010.png" alt="μONOS" /></p>
+<h6 id="references"><a class="markdownIt-Anchor" href="#references"></a> References</h6>
+<p><a target="_blank" rel="noopener" href="https://wiki.onosproject.org/">https://wiki.onosproject.org/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.opennetworking.org/onos">https://www.opennetworking.org/onos</a></p>
+<p><a target="_blank" rel="noopener" href="https://wiki.onosproject.org/display/ONOS/Downloads">https://wiki.onosproject.org/display/ONOS/Downloads</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.osgi.org/">https://www.osgi.org/</a></p>
+<p><a target="_blank" rel="noopener" href="http://karaf.apache.org/">http://karaf.apache.org/</a></p>
+<p><a target="_blank" rel="noopener" href="https://bazel.build/">https://bazel.build/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.opennetworking.org/cord/">https://www.opennetworking.org/cord/</a></p>
+<p><a target="_blank" rel="noopener" href="https://wiki.opencord.org/">https://wiki.opencord.org/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/onosproject">https://github.com/onosproject</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.opennetworking.org/">https://www.opennetworking.org/</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>ONOS Overview</p><p><a href="https://xiaohuiluo.github.io/2022/12/13/onos-overview/">https://xiaohuiluo.github.io/2022/12/13/onos-overview/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>HUI</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-12-13</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2022-12-13</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/onos/">onos</a><a class="link-muted mr-2" rel="tag" href="/tags/sdn/">sdn</a></div><div class="a2a_kit a2a_kit_size_32 a2a_default_style"><a class="a2a_dd" target="_blank" rel="noopener" href="https://www.addtoany.com/share"></a><a class="a2a_button_facebook"></a><a class="a2a_button_twitter"></a><a class="a2a_button_email"></a></div><script async src="https://static.addtoany.com/menu/page.js"></script><script src="https://static.addtoany.com/menu/page.js" defer></script></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/12/07/lpm/"><span class="level-item">LPM</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="SOHUCS" sid="2022/12/13/onos-overview/"></div><script charset="utf-8" src="https://changyan.sohu.com/upload/changyan.js"></script><script>window.changyan.api.config({appid: 'cywpxBL0d',conf: 'prod_ccdfddbc3432d3184fac703760a8e1f4'});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/avatar.png" alt="HUI"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">HUI</p><p class="is-size-6 is-block">好好学习,天天向上</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shenzhen</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">1</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">6</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/xiaohuiluo" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/xiaohuiluo"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><!--!--><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/network/"><span class="level-start"><span class="level-item">network</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-13T02:30:09.000Z">2022-12-13</time></p><p class="title"><a href="/2022/12/13/onos-overview/">ONOS Overview</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-07T08:57:24.000Z">2022-12-07</time></p><p class="title"><a href="/2022/12/07/lpm/">LPM</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-11-28T03:19:15.000Z">2022-11-28</time></p><p class="title"><a href="/2022/11/28/mptcp%20linux%20kernel%20implementation/">Mptcp linux kernel implementation</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/11/"><span class="level-start"><span class="level-item">十一月 2022</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/linux/"><span class="tag">linux</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/lpm/"><span class="tag">lpm</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mptcp/"><span class="tag">mptcp</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/multipath/"><span class="tag">multipath</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/onos/"><span class="tag">onos</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/sdn/"><span class="tag">sdn</span><span class="tag">1</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.png" alt="HUI" height="28"></a><p class="is-size-7"><span>&copy; 2022 HUI</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
