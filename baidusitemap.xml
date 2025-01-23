@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://xiaohuiluo.github.io/2025/01/23/tle/</loc>
+    <lastmod>2025-01-23</lastmod>
+  </url>
+  <url>
+    <loc>https://xiaohuiluo.github.io/2022/12/29/onos-netcfg/</loc>
+    <lastmod>2023-01-03</lastmod>
+  </url>
+  <url>
+    <loc>https://xiaohuiluo.github.io/2022/12/29/onos-subsystem/</loc>
+    <lastmod>2022-12-29</lastmod>
+  </url>
+  <url>
     <loc>https://xiaohuiluo.github.io/2022/12/13/onos-overview/</loc>
     <lastmod>2022-12-13</lastmod>
   </url>

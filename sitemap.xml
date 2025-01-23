@@ -2,6 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xiaohuiluo.github.io/2025/01/23/tle/</loc>
+    
+    <lastmod>2025-01-23</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/2022/12/29/onos-netcfg/</loc>
+    
+    <lastmod>2023-01-03</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/2022/12/29/onos-subsystem/</loc>
+    
+    <lastmod>2022-12-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://xiaohuiluo.github.io/2022/12/13/onos-overview/</loc>
     
     <lastmod>2022-12-13</lastmod>
@@ -94,7 +121,7 @@
 
   <url>
     <loc>https://xiaohuiluo.github.io/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -102,42 +129,63 @@
   
   <url>
     <loc>https://xiaohuiluo.github.io/tags/multipath/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://xiaohuiluo.github.io/tags/mptcp/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://xiaohuiluo.github.io/tags/linux/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://xiaohuiluo.github.io/tags/lpm/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://xiaohuiluo.github.io/tags/onos/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://xiaohuiluo.github.io/tags/sdn/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/tags/netcfg/</loc>
+    <lastmod>2025-01-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/tags/subsystem/</loc>
+    <lastmod>2025-01-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/tags/tle-%E4%B8%A4%E8%A1%8C%E8%BD%A8%E9%81%93%E6%95%B0%E6%8D%AE/</loc>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -146,7 +194,21 @@
   
   <url>
     <loc>https://xiaohuiluo.github.io/categories/network/</loc>
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2025-01-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/categories/astronomy/</loc>
+    <lastmod>2025-01-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://xiaohuiluo.github.io/categories/astronomy/%E5%A4%A9%E6%96%87%E5%AD%A6/</loc>
+    <lastmod>2025-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

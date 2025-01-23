@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><script>var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?cecc1da264cf1b9844644fd6f454fcdd";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();</script><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="referrer" content="no-referrer"><title>tle - HUI</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="HUI"><meta name="msapplication-TileImage" content="/img/favicon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="HUI"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本篇介绍tle(两行轨道数据)数据格式，用于天文学中卫星、航天器或其他飞行器追踪。"><meta property="og:type" content="blog"><meta property="og:title" content="tle"><meta property="og:url" content="https://xiaohuiluo.github.io/2025/01/23/tle/"><meta property="og:site_name" content="HUI"><meta property="og:description" content="本篇介绍tle(两行轨道数据)数据格式，用于天文学中卫星、航天器或其他飞行器追踪。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330094917.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330095015.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330112451.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330112540.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330122316.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330122334.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330145808.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330145019.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330152435.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/Animation_of_Orbital_eccentricity.gif"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230331095459.png"><meta property="og:image" content="https://gitee.com/martrix/blog-images/raw/master/img/20230331165301.png"><meta property="article:published_time" content="2025-01-23T01:40:51.000Z"><meta property="article:modified_time" content="2025-01-23T02:06:15.075Z"><meta property="article:author" content="HUI"><meta property="article:tag" content="tle - 两行轨道数据"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://gitee.com/martrix/blog-images/raw/master/img/20230330094917.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaohuiluo.github.io/2025/01/23/tle/"},"headline":"tle","image":["https://gitee.com/martrix/blog-images/raw/master/img/20230330094917.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330095015.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330112451.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330112540.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330122316.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330122334.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330145808.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330145019.png","https://gitee.com/martrix/blog-images/raw/master/img/20230330152435.png","https://gitee.com/martrix/blog-images/raw/master/img/Animation_of_Orbital_eccentricity.gif","https://gitee.com/martrix/blog-images/raw/master/img/20230331095459.png","https://gitee.com/martrix/blog-images/raw/master/img/20230331165301.png"],"datePublished":"2025-01-23T01:40:51.000Z","dateModified":"2025-01-23T02:06:15.075Z","author":{"@type":"Person","name":"HUI"},"publisher":{"@type":"Organization","name":"HUI","logo":{"@type":"ImageObject","url":"https://xiaohuiluo.github.io/img/logo.png"}},"description":"本篇介绍tle(两行轨道数据)数据格式，用于天文学中卫星、航天器或其他飞行器追踪。"}</script><link rel="canonical" href="https://xiaohuiluo.github.io/2025/01/23/tle/"><link rel="alternate" href="/atom.xml" title="HUI" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.2.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/vs.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.png" alt="HUI" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2025-01-23T01:40:51.000Z" title="2025/1/23 09:40:51">2025-01-23</time>发表</span><span class="level-item"><time dateTime="2025-01-23T02:06:15.075Z" title="2025/1/23 10:06:15">2025-01-23</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/astronomy/">astronomy</a><span> / </span><a class="link-muted" href="/categories/astronomy/%E5%A4%A9%E6%96%87%E5%AD%A6/">天文学</a></span><span class="level-item">12 分钟读完 (大约1800个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">tle</h1><div class="content"><p>本篇介绍tle(两行轨道数据)数据格式，用于天文学中卫星、航天器或其他飞行器追踪。</p>
+<span id="more"></span>
+<p>两行轨道数据，由美国celestrak发明创立，是用于描述太空飞行器位置和速度的表达式，以wiki网站<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Two-line_element_set">TLE</a>格式介绍为例。<br />
+卫星、航天器或其他飞行器一进入太空就会被美国NORAD编入星历目录终生追踪，描述使用TLE格式。</p>
+<h2 id="tle数据样例"><a class="markdownIt-Anchor" href="#tle数据样例"></a> tle数据样例</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ISS (ZARYA)</span><br><span class="line">1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927</span><br><span class="line">2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537</span><br></pre></td></tr></table></figure>
+<p>如上所示，tle是字符格式数据描述(区别于二进制数据描述)，每个飞行器tle数据一共3行描述。</p>
+<h3 id="首行"><a class="markdownIt-Anchor" href="#首行"></a> 首行</h3>
+<p>首行描述卫星名称，最长24个字符。<br />
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330094917.png" alt="tle title line" /></p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330095015.png" alt="tle satellite name" /></p>
+<h3 id="第一行"><a class="markdownIt-Anchor" href="#第一行"></a> 第一行</h3>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330112451.png" alt="tle line 1" /></p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330112540.png" alt="tle line 1 fields" /></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Desc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>行号</td>
+</tr>
+<tr>
+<td>2</td>
+<td>卫星编号</td>
+</tr>
+<tr>
+<td>3</td>
+<td>卫星类别</td>
+</tr>
+<tr>
+<td>4</td>
+<td>卫星发射年份(仅保留后两位，如上98为1998年)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>卫星发射年份顺序(如上067表示1998年第67次发射)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>发射卫星载荷个数(如上A表示是第一个载荷，如果一次发射多颗卫星载荷，使用26个英文字母排序；如果超过了26个编号，则使用两位字母，如AA、AB、AC编号)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>星历建立年份(仅保留后两位如上图，08表示2008年)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>星历建立天(一年中的第几天，用十进制数表示，小数表示天中的时间段，可以使用空格或数字表示天，如’236’,‘006’, ’ 6’)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>平均运动的一阶导数，用来计算平均运动变化带来的轨道位置漂移，用于预测卫星位置及校准位置(第34字符可以是’+‘/’-‘/’ '用于表示导数正负值，空格为正)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>平均运动的二阶导数，用于计算平均运动变化漂移变化带来的漂移，用于预测卫星位置和校准位置</td>
+</tr>
+<tr>
+<td>11</td>
+<td>BSTAR阻力扰动系数，用于模拟阻力(空气阻力)的系数</td>
+</tr>
+<tr>
+<td>12</td>
+<td>星历类型，美军空军空军指挥中心用1，其他用0</td>
+</tr>
+<tr>
+<td>13</td>
+<td>星历编号，按生成的TLE数据条数递增</td>
+</tr>
+<tr>
+<td>14</td>
+<td>校验和(对10取模运算)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="第二行"><a class="markdownIt-Anchor" href="#第二行"></a> 第二行</h3>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330122316.png" alt="tle line 2" /></p>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330122334.png" alt="tle line 2 desc" /></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Desc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>行号</td>
+</tr>
+<tr>
+<td>2</td>
+<td>卫星编号</td>
+</tr>
+<tr>
+<td>3</td>
+<td>轨道倾角，轨道面和地球赤道的夹角度数，0-90度表示顺行轨道(北极看是逆时针)，90-100度表示逆行轨道</td>
+</tr>
+<tr>
+<td>4</td>
+<td>升交点赤径，指卫星由南到北穿过地球赤道平面时，与地球赤道平面的交角</td>
+</tr>
+<tr>
+<td>5</td>
+<td>轨道偏心率，卫星椭圆轨道面中心点到地球球心点的距离除以卫星轨道半长轴，值为0~1的小数，这里只保留小数部分</td>
+</tr>
+<tr>
+<td>6</td>
+<td>近地点幅角，卫星近地点和升交点对地心的张角</td>
+</tr>
+<tr>
+<td>7</td>
+<td>平近点角，确定卫星经过近地点时间</td>
+</tr>
+<tr>
+<td>8</td>
+<td>每天环绕地球的圈数</td>
+</tr>
+<tr>
+<td>9</td>
+<td>发射以来绕地球飞行圈数</td>
+</tr>
+<tr>
+<td>10</td>
+<td>校验和</td>
+</tr>
+</tbody>
+</table>
+<h4 id="satellite-catalog-number"><a class="markdownIt-Anchor" href="#satellite-catalog-number"></a> Satellite Catalog Number</h4>
+<p>Satellite Catalog Number(SATCAT, also known as NORAD (North American Aerospace Defense) Catalog Number, NORAD ID, USSPACECOM object number or simply catalog number, among similar variants)。<br />
+卫星编号：美国太空司令部按照发射或发现顺行分配给地球轨道和离开地球轨道所有人造物体的连续9位数字，编号小于10000的对象始终右对齐，并在左侧填充0或空格。<br />
+美国太空部队使用Alpha 5编号模式用于表示240000以上的数字，少于100000的数字不受Alpha 5影响，所有的Alpha 5数字映射如下：<br />
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330145808.png" alt="alpha 5 number" /></p>
+<h4 id="degrees-parameter"><a class="markdownIt-Anchor" href="#degrees-parameter"></a> Degrees Parameter</h4>
+<p>轨道倾角测量物体围绕天体的轨道倾斜度，它表示为参考平面与轨道平面或轨道物体的方向轴之间的角度，TLE中以地球赤道平面作为参考平面。<br />
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330145019.png" alt="tle degrees parameter" /><br />
+如上图所示，黄色轨道面为卫星轨道面，灰色为参考轨道面(通常为赤道面)：</p>
+<ul>
+<li>轨道倾角为 <code>i</code>，影响卫星轨道面相对赤道轨道面倾斜度，比如i=90度卫星轨道面为极轨道面</li>
+<li>升交点赤径为 <code>Ω</code>，影响卫星轨道面和赤道轨道面两个相交点位置</li>
+<li>近地点幅角为 <code>ω</code>，影响卫星轨道面长轴和赤道轨道面短轴夹角度数大小</li>
+</ul>
+<p>平近点幅角为椭圆轨道从轨道物体经过近点后所经过周期的分数，用角度表示，影响卫星经过近点绕行周期内时间段，比如同轨多颗卫星就是该值控制各卫星在轨道内绕行位置。<br />
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/20230330152435.png" alt="tle mean anomaly" /></p>
+<h4 id="eccentricity"><a class="markdownIt-Anchor" href="#eccentricity"></a> Eccentricity</h4>
+<p>Orbital eccentricity : 轨道偏心率，会影响卫星轨道面形状(椭圆扁率)和偏离理想中心位置<br />
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/Animation_of_Orbital_eccentricity.gif" alt="Animation_of_Orbital_eccentricity.gif" /><br />
+如上图不同偏心率轨道运行情况，红色(0.0)，绿色(0.2)，蓝色(0.4)，黄色(0.6)，粉色(0.8)</p>
+<h4 id="轨道参数小结"><a class="markdownIt-Anchor" href="#轨道参数小结"></a> 轨道参数小结</h4>
+<p>卫星运行轨道唯一性必要的参数有6个，被称为开普勒元素，这些元素如下：</p>
+<ul>
+<li>轨道倾角</li>
+<li>升交点黄径</li>
+<li>离心率</li>
+<li>近日点幅角</li>
+<li>半长轴</li>
+<li>指定星历平近点幅角</li>
+</ul>
+<p>tle中涉及轨道的参数如下：</p>
+<ul>
+<li>轨道倾角 (Inclination)</li>
+<li>升交点赤经 (Right Ascension of the ascending node)</li>
+<li>轨道偏心率(Eccentricity)</li>
+<li>平近点角 (Argument of perigee)</li>
+<li>平近点时间 (Time of perigee passage)</li>
+<li>平均每天绕行圈数 (Mean motion)</li>
+<li>阻力扰动(BSTAR)</li>
+</ul>
+<p>半长轴在tle中是基于Mean motion和BSTAR来计算，近地点轨道高度可通过半长轴和Eccentricity来计算，tle中其他参数与开普勒元素一一对应。</p>
+<p>如Starlink卫星互联网下通常基于轨道倾角和轨道高度一起设计成一层shell(壳)，为了让大规模卫星均匀散步于地球表面，在同一shell中升交点赤径和近地点幅角及轨道偏心率用于调整在壳层中的异轨分布，平近点幅角用于控制同轨分布，主要星座的tle可从<a href="%5Bhttps://celestrak.org/NORAD/elements/index.php?FORMAT=tle">celestrak</a>网站下载。</p>
+<h3 id="轨道展示"><a class="markdownIt-Anchor" href="#轨道展示"></a> 轨道展示</h3>
+<p>样例tle数据及对应的轨道：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ISS (ZARYA)</span><br><span class="line">1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927</span><br><span class="line">2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/martrix/blog-images/raw/master/img/20230331095459.png" alt="ISS (ZARYA)" /></p>
+<p>北斗49颗卫星对应的卫星轨道<a target="_blank" rel="noopener" href="https://celestrak.org/NORAD/elements/gp.php?GROUP=beidou&amp;FORMAT=tle">tles</a>对应轨道：<br />
+<img src="https://gitee.com/martrix/blog-images/raw/master/img/20230331165301.png" alt="beidou" /></p>
+<h6 id="reference"><a class="markdownIt-Anchor" href="#reference"></a> Reference</h6>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Two-line_element_set">wiki</a><br />
+<a target="_blank" rel="noopener" href="https://www.space-track.org/documentation#/tle">Space-Track tle desc</a><br />
+<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/600113644">基于TLE数据的一些计算 - 知乎</a><br />
+<a target="_blank" rel="noopener" href="https://celestrak.org/NORAD/elements/index.php?FORMAT=tle">CelesTrak: Current GP Element Sets</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>tle</p><p><a href="https://xiaohuiluo.github.io/2025/01/23/tle/">https://xiaohuiluo.github.io/2025/01/23/tle/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>HUI</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-01-23</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-01-23</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/tle-%E4%B8%A4%E8%A1%8C%E8%BD%A8%E9%81%93%E6%95%B0%E6%8D%AE/">tle - 两行轨道数据</a></div><div class="a2a_kit a2a_kit_size_32 a2a_default_style"><a class="a2a_dd" target="_blank" rel="noopener" href="https://www.addtoany.com/share"></a><a class="a2a_button_facebook"></a><a class="a2a_button_twitter"></a><a class="a2a_button_email"></a></div><script async src="https://static.addtoany.com/menu/page.js"></script><script src="https://static.addtoany.com/menu/page.js" defer></script></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/12/29/onos-netcfg/"><span class="level-item">onos-netcfg</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="SOHUCS" sid="2025/01/23/tle/"></div><script charset="utf-8" src="https://changyan.sohu.com/upload/changyan.js"></script><script>window.changyan.api.config({appid: 'cywpxBL0d',conf: 'prod_ccdfddbc3432d3184fac703760a8e1f4'});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/avatar.png" alt="HUI"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">HUI</p><p class="is-size-6 is-block">好好学习,天天向上</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shenzhen</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/xiaohuiluo" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/xiaohuiluo"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><!--!--><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/astronomy/"><span class="level-start"><span class="level-item">astronomy</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul><li><a class="level is-mobile" href="/categories/astronomy/%E5%A4%A9%E6%96%87%E5%AD%A6/"><span class="level-start"><span class="level-item">天文学</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></li><li><a class="level is-mobile" href="/categories/network/"><span class="level-start"><span class="level-item">network</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2025-01-23T01:40:51.000Z">2025-01-23</time></p><p class="title"><a href="/2025/01/23/tle/">tle</a></p><p class="categories"><a href="/categories/astronomy/">astronomy</a> / <a href="/categories/astronomy/%E5%A4%A9%E6%96%87%E5%AD%A6/">天文学</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-29T09:24:11.000Z">2022-12-29</time></p><p class="title"><a href="/2022/12/29/onos-netcfg/">onos-netcfg</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-29T07:46:45.000Z">2022-12-29</time></p><p class="title"><a href="/2022/12/29/onos-subsystem/">ONOS Subsystem</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-13T02:30:09.000Z">2022-12-13</time></p><p class="title"><a href="/2022/12/13/onos-overview/">ONOS Overview</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-12-07T08:57:24.000Z">2022-12-07</time></p><p class="title"><a href="/2022/12/07/lpm/">LPM</a></p><p class="categories"><a href="/categories/network/">network</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2025/01/"><span class="level-start"><span class="level-item">一月 2025</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/11/"><span class="level-start"><span class="level-item">十一月 2022</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/linux/"><span class="tag">linux</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/lpm/"><span class="tag">lpm</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mptcp/"><span class="tag">mptcp</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/multipath/"><span class="tag">multipath</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/netcfg/"><span class="tag">netcfg</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/onos/"><span class="tag">onos</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/sdn/"><span class="tag">sdn</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/subsystem/"><span class="tag">subsystem</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/tle-%E4%B8%A4%E8%A1%8C%E8%BD%A8%E9%81%93%E6%95%B0%E6%8D%AE/"><span class="tag">tle - 两行轨道数据</span><span class="tag">1</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.png" alt="HUI" height="28"></a><p class="is-size-7"><span>&copy; 2025 HUI</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
